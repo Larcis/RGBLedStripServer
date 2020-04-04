@@ -2,11 +2,13 @@
 RGB şerit led sürmek için yazılmış nodemcu(esp8266) uyumlu arduino idesinde yazılmıs kod.
 
 # Kullanım
+
 ip nodemcu nun ip sini temsil etmektedir. \
 http://ip/get_color \
 {R: value, G: value, B: value} (ledlerin o anki renk değerlerini geri döndürür.) \
 http://ip/set_color?r=value&b=value&g=value \
 led lerin rengini ayarlamak için kullanılır. value 0 - 255 arasında olabilir. Üzerinde veya asagısında bir deger verildiginde modu alınır. 
+### Not: kodu atmadan önce wifi_adiniz ve wifi_sifreniz kısımlarını doldurun.
 
 # Bağlantılar
 ## Nodemcu icin: 
