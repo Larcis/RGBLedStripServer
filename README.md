@@ -25,5 +25,8 @@ Vin ve GND direk guc kaynagına baglı
 +12V direk guc kaynagına baglı \
 RGB ground kabloları da l298n den cıkan RGB kablolarına baglı.
 
-
-
+# Faydalı Linkler
+https://www.waveformlighting.com/home-residential/how-to-choose-a-power-supply-for-your-led-strip-projectv \
+https://www.electronicwings.com/nodemcu/nodemcu-pwm-with-arduino-ide \
+https://randomnerdtutorials.com/esp8266-web-server/ \
+https://learn.adafruit.com/rgb-led-strips/usage
