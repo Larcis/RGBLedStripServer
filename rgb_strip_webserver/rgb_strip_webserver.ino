@@ -35,7 +35,7 @@ void setColor(byte r, byte g, byte b){
 }
 
 String getColor(){
-  sprintf(buff, "{R:%u,G:%u,B:%u}", cur_r, cur_g, cur_b);
+  sprintf(buff, "{\"r\":%u,\"g\":%u,\"b\":%u}", cur_r, cur_g, cur_b);
   String resp = buff;
   return successResponse(resp);
 }
