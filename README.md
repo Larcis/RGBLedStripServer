@@ -1,12 +1,12 @@
 
 # RGBLedStripServer v2
 ### Endpoints: 
-## /set_color  
+## :81/set_color  
 ##### kullanım: /set_color?r=255&g=255&b=255
 ##### r: kırmızı
 ##### g : yeşil
 ##### b : mavi - [0,255] aralığında hepsi
-
+#### Not: set_color endpointine 81. porttan erişmeniz gerekiyor.
 ## /get_color 
 ## /set_mode 
 ##### mode : flash, fade, patrol veya free olabilir
