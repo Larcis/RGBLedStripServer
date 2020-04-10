@@ -1,4 +1,37 @@
-# RGBLedStripServer
+
+# RGBLedStripServer v2
+### Endpoints: 
+## /set_color  
+##### kullanım: /set_color?r=255&g=255&b=255
+##### r: kırmızı
+##### g : yeşil
+##### b : mavi - [0,255] aralığında hepsi
+
+## /get_color 
+## /set_mode 
+##### mode : flash, fade, patrol veya free olabilir
+## /get_mode 
+
+## /change_fade_params
+##### delay : azaltmalar ve arttırmalar arasındaki bekleme süresi
+##### step_size : hsv degeri üzerinden her adımda v değerindeki azaltmanın ya da arttırmanın ne kadar olacagı
+
+## /change_flash_params 
+##### delay_dark : ledler kapalı olarak beklenecek sure 
+##### delay_light : ledler acık olarak beklenecek sure
+##### random_enabled : tek renk mı yanıp sonsun yoksa her yanısta rastgele bır renk mı secılsın 
+
+## /change_patrol_params 
+##### interval_start : hue degerı uzerınden gezılecek aralıgın baslangıc noktası
+##### interval_end : bıtıs noktası 
+##### delay : hue arttırılmadan veya azaltılmadan once beklenecek sure
+##### one_way : renk degısımlerı sadece ileri gidip basamı donsun yoksa ileri geri ileri geri seklınde mi olsun -> (interval [0,360] arasında olmalıdır)
+## /random_mode
+
+
+
+# ~~RGBLedStripServer v1~~ --deprecated
+(v2 serverın modu free yapılarak v1 yerine kullanılmaya devam edılebılır)
 RGB şerit led sürmek için yazılmış nodemcu(esp8266) uyumlu arduino idesinde yazılmıs kod.
 
 # Kullanım
