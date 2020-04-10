@@ -1,4 +1,4 @@
-//#define DEBUG_ESP_HTTP_SERVER
+// #define DEBUG_ESP_HTTP_SERVER
 #include "ESP8266WiFi.h" 
 #include <ESP8266WebServer.h>
 #include "led_controler.h"
@@ -9,31 +9,49 @@ using namespace led_controler;
 const char* ssid = "wifi_adiniz";
 const char* password = "wifi_sifreniz";
 ESP8266WebServer server(80);
+WiFiServer server2(81);
 
 char buff[25];
 String getColor(){
-  byte * cur_rgb = current_rgb();
-  sprintf(buff, "{\"r\":%u,\"g\":%u,\"b\":%u}", cur_rgb[0], cur_rgb[1], cur_rgb[2]);
+  byte * cur_rgb_text = current_rgb();
+  sprintf(buff, "{\"r\":%u,\"g\":%u,\"b\":%u}", cur_rgb_text[0], cur_rgb_text[1], cur_rgb_text[2]);
   String resp = buff;
   return resp;
 }
 
-void set_color_handler(){
+
+char req[512];
+/*void set_color_handler(){
   if(get_mode() == FREE){
-    byte r, g, b;
-    r = g = b = 0;
-    if(server.hasArg("R")) r = server.arg("R").toInt();
-    if(server.hasArg("r")) r = server.arg("r").toInt();
-    if(server.hasArg("G")) g = server.arg("G").toInt();
-    if(server.hasArg("g")) g = server.arg("g").toInt();
-    if(server.hasArg("B")) b = server.arg("B").toInt();
-    if(server.hasArg("b")) b = server.arg("b").toInt();
-    set_color(r, g, b);
-    server.send(200);
+      request.toCharArray(req, 512);
+      char * str = &req[request.indexOf("set_color")+10];
+      char * tok;
+      byte state = -1, r, g, b;
+      r = g = b = 0;
+      tok = strtok(str, "&= ");
+      do{
+        if(strlen(tok) > 4 && tok[0] == 'H' && tok[1] == 'T' && tok[2] == 'T' && tok[3] == 'P') break;
+        switch(state){
+          case 1: r = (byte)atoi(tok); break;
+          case 2: g = (byte)atoi(tok); break;
+          case 3: b = (byte)atoi(tok); break;
+
+        }
+        if(strlen(tok) == 1)
+          switch(tok[0]){
+            case 'R': case 'r': state = 1; break;
+            case 'G': case 'g': state = 2; break;
+            case 'B': case 'b': state = 3; break;
+            default: state = -1;
+          }
+        else
+          state = -1;
+      }while((tok = strtok(NULL, "&= ")) != NULL);
+    server.send(200, "application/json", getColor());
   } else {
     server.send(400);
   }
-}
+}*/
 void get_color_handler(){
   server.send(200, "application/json", getColor());
 }
@@ -97,7 +115,7 @@ void setup() {
     delay(500);
   }
   Serial.println(FADE);
-  server.on("/set_color", set_color_handler);
+  //server.on("/set_color", set_color_handler);
   server.on("/get_color", get_color_handler);
   server.on("/set_mode", set_mode_handler);
   server.on("/get_mode", get_mode_handler);
@@ -112,9 +130,53 @@ void setup() {
   init_patrol_mode();
   set_mode(PATROL);
   server.begin();
+  server2.begin();
 }
 
 void loop() {
   led_update_state();
   server.handleClient(); 
+  if(get_mode() == FREE){
+    WiFiClient client = server2.available();
+    if(client){
+    uint32_t now = millis();
+    while(!client.available() && millis() - now < 2000){
+      delay(5);
+    }
+    if(client.available()){
+      String request = client.readStringUntil('\r');
+      client.flush();
+      if(request.indexOf("set_color") != -1){
+        request.toCharArray(req, 512);
+        char * str = &req[request.indexOf("set_color")+10];
+        char * tok;
+        byte state = -1, r, g, b;
+        r = g = b = 0;
+        tok = strtok(str, "&= ");
+        do{
+          if(strlen(tok) > 4 && tok[0] == 'H' && tok[1] == 'T' && tok[2] == 'T' && tok[3] == 'P') break;
+          switch(state){
+            case 1: r = (byte)atoi(tok); break;
+            case 2: g = (byte)atoi(tok); break;
+            case 3: b = (byte)atoi(tok); break;
+
+          }
+          if(strlen(tok) == 1)
+            switch(tok[0]){
+              case 'R': case 'r': state = 1; break;
+              case 'G': case 'g': state = 2; break;
+              case 'B': case 'b': state = 3; break;
+              default: state = -1;
+            }
+          else
+            state = -1;
+        }while((tok = strtok(NULL, "&= ")) != NULL);
+        set_color(r, g, b);
+        client.println("HTTP/1.1 200 OK\nContent-Type: application/json\n\n"+getColor()+"\n\n");
+      } else {
+        client.println("HTTP/1.1 400 Bad Request\nContent-Type: application/json\n\n\n");
+      }
+    }
+  }
+}
 }
