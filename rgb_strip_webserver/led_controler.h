@@ -126,9 +126,9 @@ namespace led_controler{
   }
   
   void apply_to_pins(byte r, byte g, byte b) {
-      short color_r = ANALOG_RESOLUTION - (r * COEFF);
-      short color_g = ANALOG_RESOLUTION - (g * COEFF);
-      short color_b = ANALOG_RESOLUTION - (b * COEFF);
+      short color_r = r * COEFF;//ANALOG_RESOLUTION - (r * COEFF);
+      short color_g = g * COEFF;//ANALOG_RESOLUTION - (g * COEFF);
+      short color_b = b * COEFF;//ANALOG_RESOLUTION - (b * COEFF);
       analogWrite(R_PIN, color_r);
       analogWrite(G_PIN, color_g);
       analogWrite(B_PIN, color_b);
@@ -138,7 +138,7 @@ namespace led_controler{
       //apply_to_pins(0, 0, 0);
       //delay(3);
       apply_to_pins(r, g, b);
-      delay(1);
+      //delay(1);
       cur_rgb[0] = r;
       cur_rgb[1] = g;
       cur_rgb[2] = b;
@@ -210,7 +210,23 @@ namespace led_controler{
       } else {
           if((millis() - flash_args.last_change) >= flash_args.delay_dark){
              if(flash_args.random_enabled){
-              set_color(random(1, 256),random(1, 256),random(1, 256));
+              byte r = random(1, 256), g, b;
+              if(r > 127){
+                g = random(1, 127);
+                b = random(1, 127);
+              } else if((g = random(1, 256)) > 127){
+                b = random(1, 127);
+              } else {
+                b = random(127, 256);
+              }
+              set_color(r, g, b);
+              /*
+              cur_hsv[0] = random(0, 360);
+              cur_hsv[1] = random(70, 100) / 100.;
+              cur_hsv[2] = random(50, 100) / 100.;
+              hsv2rgb(cur_hsv, cur_rgb);
+              //set_color(random(1, 256),random(1, 256),random(1, 256));
+              set_color(cur_rgb[0],cur_rgb[1],cur_rgb[2]);*/
             } else {
               set_color(flash_args.rgb[0],flash_args.rgb[1],flash_args.rgb[2]);
             }
@@ -237,6 +253,7 @@ namespace led_controler{
           patrol_args.interval_start = is;
           patrol_args.interval_end = ie;
           cur_hsv[0] = is;
+          patrol_args.direc = 1;
       }
       if(db >= 1 && db <= 5000)
           patrol_args.delay_between = db;
@@ -268,6 +285,7 @@ namespace led_controler{
     if(m == PATROL){
         cur_hsv[1] = cur_hsv[2] = 1.;
         cur_hsv[0] = patrol_args.interval_start;
+        patrol_args.direc = 1;
     }
     CURRENT_MODE = m;  
   }
@@ -311,6 +329,9 @@ String mode2str(){
               patrol_mode_update(); 
               break;
       }
+      /*Serial.print(cur_hsv[0]);Serial.print(" ");
+      Serial.print(cur_hsv[1]);Serial.print(" ");
+      Serial.println(cur_hsv[2]);*/
   }
 
 }

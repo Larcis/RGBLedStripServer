@@ -109,7 +109,8 @@ void random_mode_handler(){
   server.send(200, "text/plain", mode2str());
 }
 void setup() {
-  Serial.begin(115200);
+  //Serial.begin(115200);
+  randomSeed(analogRead(A0));
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
